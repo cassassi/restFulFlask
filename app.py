@@ -7,23 +7,23 @@ app.config.from_pyfile('config.cfg')
 db = SQLAlchemy(app)
 
 
-possede=db.Table('possede',                            
+possede=db.Table('possede',
 	db.Column('pois_id', db.Integer,db.ForeignKey('pois.idPoi'), nullable=False),
 	db.Column('fields_id',db.Integer,db.ForeignKey('fields.idField'),nullable=False),
 	db.Column('values_id',db.Integer,db.ForeignKey('values.idValue'),nullable=False),
 	db.PrimaryKeyConstraint('pois_id', 'fields_id', 'values_id') )
- 
+
 class Pois(db.Model):
 	idPoi = db.Column(db.Integer, primary_key=True)
 	version = db.Column(db.Integer)
 	tour_id = db.Column(db.Integer)
 	fields=db.relationship('Fields', secondary=possede, backref=db.backref('pois', lazy = 'dynamic')  )
-	values=db.relationship('Values', secondary=possede, backref=db.backref('pois', lazy = 'dynamic')  )  
- 
+	values=db.relationship('Values', secondary=possede, backref=db.backref('pois', lazy = 'dynamic')  )
+
 class Fields(db.Model):
 	idField=db.Column(db.Integer, primary_key=True)
 	pos=db.Column(db.Integer)
-	nameField=db.Column(db.String(35))  
+	nameField=db.Column(db.String(35))
 	requiredField=db.Column(db.Boolean)
 	#values=db.relationship('Values', secondary=possede, backref=db.backref('fields', lazy = 'dynamic')  )
 
@@ -31,15 +31,15 @@ class Values(db.Model):
 	idValue=db.Column(db.Integer, primary_key=True)
 	fieldValues=db.Column(db.Text)
 	createdDate=db.Column(db.Date)
-	status=db.Column(db.String(35))  
-	users = db.relationship('Users', backref='value', lazy='dynamic') 
+	status=db.Column(db.String(35))
+	users = db.relationship('Users', backref='value', lazy='dynamic')
 
 class Users(db.Model):
 	idUser=db.Column(db.Integer, primary_key=True)
-	lastNameUser=db.Column(db.String(35)) 
-	firstNameUser=db.Column(db.String(35)) 
-	email=db.Column(db.String(35)) 
-	pictureUser=db.Column(db.String(35)) 
+	lastNameUser=db.Column(db.String(35))
+	firstNameUser=db.Column(db.String(35))
+	email=db.Column(db.String(35))
+	pictureUser=db.Column(db.String(35))
 	value_id = db.Column(db.Integer, db.ForeignKey('values.idValue'))
 
 #poi
@@ -164,19 +164,17 @@ def addconnection():
 				malist.append({'idPoi':poi.idPoi,'idField':field.idField, 'idValue':value.idValue})
 	return jsonify({'possede' : malist})
 
-#p=Pois.query.filter_by(idPoi=1).first()                                
-#v=Values.query.filter_by(idValue=1).first()                      
-#f=Fields.query.filter_by(idField=1).first()                      
+#p=Pois.query.filter_by(idPoi=1).first()
+#v=Values.query.filter_by(idValue=1).first()
+#f=Fields.query.filter_by(idField=1).first()
 #v.fields.append(f)
 #f.pois.append(p)
 #db.session.commit()
 
 
+# Create the database tables.
+db.create_all()
 
 
 if __name__ == "__main__":
 	app.run(debug=True)
-
-
-
-
