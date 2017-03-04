@@ -7,135 +7,197 @@ app.config.from_pyfile('config.cfg')
 db = SQLAlchemy(app)
 
 
-possede=db.Table('possede',                            
+class Association_PFV(db.Model):
+    __tablename__ = 'association_pfv'
+    pois_id = db.Column(db.Integer, db.ForeignKey(
+        'pois.idPoi'), primary_key=True)
+    fields_id = db.Column(db.Integer, db.ForeignKey(
+        'fields.idField'), primary_key=True)
+    values_id = db.Column(db.Integer, db.ForeignKey(
+        'values.idValue'), primary_key=True)
+
+    pois = db.relationship("Pois", backref=db.backref(
+        "association_pfv", cascade="all, delete-orphan"))
+    fields = db.relationship("Fields", backref=db.backref(
+        "association_pfv", cascade="all, delete-orphan"))
+    values = db.relationship("Values", backref=db.backref(
+        "association_pfv", cascade="all, delete-orphan"))
+
+    def __init__(self, pois=None, fields=None, values=None):
+        self.pois = pois
+        self.fields = fields
+        self.values = values
+
+    def __repr__(self):
+        return '<Association_PFV {}>'.format(self.pois.id + " " + self.fields.name + " " + self.values.fieldValues)
+
+
+'''possede=db.Table('possede',
 	db.Column('pois_id', db.Integer,db.ForeignKey('pois.idPoi'), nullable=False),
 	db.Column('fields_id',db.Integer,db.ForeignKey('fields.idField'),nullable=False),
 	db.Column('values_id',db.Integer,db.ForeignKey('values.idValue'),nullable=False),
-	db.PrimaryKeyConstraint('pois_id', 'fields_id', 'values_id') )
- 
+	db.PrimaryKeyConstraint('pois_id', 'fields_id', 'values_id') )'''
+
+
 class Pois(db.Model):
-	idPoi = db.Column(db.Integer, primary_key=True)
-	version = db.Column(db.Integer)
-	tour_id = db.Column(db.Integer)
-	fields=db.relationship('Fields', secondary=possede, backref=db.backref('pois', lazy = 'dynamic')  )
-	values=db.relationship('Values', secondary=possede, backref=db.backref('pois', lazy = 'dynamic')  )  
- 
+    idPoi = db.Column(db.Integer, primary_key=True)
+    version = db.Column(db.Integer)
+    tour_id = db.Column(db.Integer)
+    fields = db.relationship('Fields', secondary='association_pfv',
+                             backref=db.backref('pois', lazy='dynamic'))
+    values = db.relationship('Values', secondary='association_pfv',
+                             backref=db.backref('pois', lazy='dynamic'))
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
 class Fields(db.Model):
-	idField=db.Column(db.Integer, primary_key=True)
-	pos=db.Column(db.Integer)
-	nameField=db.Column(db.String(35))  
-	requiredField=db.Column(db.Boolean)
-	#values=db.relationship('Values', secondary=possede, backref=db.backref('fields', lazy = 'dynamic')  )
+    idField = db.Column(db.Integer, primary_key=True)
+    pos = db.Column(db.Integer)
+    nameField = db.Column(db.String(35))
+    requiredField = db.Column(db.Boolean)
+    # values=db.relationship('Values', secondary=possede, backref=db.backref('fields', lazy = 'dynamic')  )
+
 
 class Values(db.Model):
-	idValue=db.Column(db.Integer, primary_key=True)
-	fieldValues=db.Column(db.Text)
-	createdDate=db.Column(db.Date)
-	status=db.Column(db.String(35))  
-	users = db.relationship('Users', backref='value', lazy='dynamic') 
+    idValue = db.Column(db.Integer, primary_key=True)
+    fieldValues = db.Column(db.Text)
+    createdDate = db.Column(db.Date)
+    status = db.Column(db.String(35))
+    users = db.relationship('Users', backref='value', lazy='dynamic')
+
 
 class Users(db.Model):
-	idUser=db.Column(db.Integer, primary_key=True)
-	lastNameUser=db.Column(db.String(35)) 
-	firstNameUser=db.Column(db.String(35)) 
-	email=db.Column(db.String(35)) 
-	pictureUser=db.Column(db.String(35)) 
-	value_id = db.Column(db.Integer, db.ForeignKey('values.idValue'))
+    idUser = db.Column(db.Integer, primary_key=True)
+    lastNameUser = db.Column(db.String(35))
+    firstNameUser = db.Column(db.String(35))
+    email = db.Column(db.String(35))
+    pictureUser = db.Column(db.String(35))
+    value_id = db.Column(db.Integer, db.ForeignKey('values.idValue'))
 
-#poi
+# poi
+
+
 @app.route('/api/pois', methods=['GET'])
 def returnAllPois():
-	allPois=Pois.query.all()
-	malist=[]
+    allPois = Pois.query.all()
+    malist = []
 
-	for poi in allPois:
-		malist.append({'idPoi' : poi.idPoi, 'version' : poi.version, 'tour_id' : poi.tour_id})
-	return jsonify({'pois' : malist})
+    for poi in allPois:
+        malist.append(
+            {'idPoi': poi.idPoi, 'version': poi.version, 'tour_id': poi.tour_id})
+    return jsonify({'pois': malist})
+
 
 @app.route('/api/pois', methods=['POST'])
 def addOnePoi():
-	p=Pois(version=request.json['version'], tour_id=request.json['tour_id'])
-	db.session.add(p)
-	db.session.commit()
-	allPois=Pois.query.all()
-	malist=[]
-	for poi in allPois:
-		malist.append({'idPoi' : poi.idPoi, 'version' : poi.version, 'tour_id' : poi.tour_id})
-	return jsonify({'pois' : malist})
+    # p=Pois(version=request.json['version'], tour_id=request.json['tour_id'])
+    # db.session.add(p)
+    # db.session.commit()
+    # allPois=Pois.query.all()
+    # malist=[]
+    # for poi in allPois:
+    # 	malist.append({'idPoi' : poi.idPoi, 'version' : poi.version, 'tour_id' : poi.tour_id})
+    # return jsonify({'pois' : malist})
+
+    currentPoi = Pois(tour_id=request.json['tour_id'], version=1)
+    for key, value in request.json.items():
+        if key not in ['tour_id']:
+            currentField = Fields(pos=1, nameField=key)
+            currentValue = Values(fieldValues=value)
+            currentasso = Association_PFV(
+                currentPoi, currentField, currentValue)
+            db.session.add(currentasso)
+            db.session.commit()
+    return jsonify({'Poi' : currentPoi.idPoi}), 201
+
 
 @app.route('/api/pois/<int:idp>', methods=['GET'])
 def returnOnepoi(idp):
-	onePoi=Pois.query.filter_by(idPoi=idp).first()
-	if onePoi==None:
-		return jsonify({'poi' : 'no results was founds'})
-	malist=[]
-	malist.append({'idPoi' : onePoi.idPoi, 'version' : onePoi.version, 'tour_id' : onePoi.tour_id})
-	return jsonify({'poi' : malist[0]})
+    onePoi = Pois.query.filter_by(idPoi=idp).first()
+    if onePoi == None:
+        return jsonify({'poi': 'no results was founds'})
+    malist = []
+    malist.append(
+        {'idPoi': onePoi.idPoi, 'version': onePoi.version, 'tour_id': onePoi.tour_id})
+    return jsonify({'poi': malist[0]})
 
 
-#Field
+# Field
 @app.route('/api/fields', methods=['GET'])
 def returnAllFields():
-	allFields=Fields.query.all()
-	malist=[]
+    allFields = Fields.query.all()
+    malist = []
 
-	for field in allFields:
-		malist.append({'idField' : field.idField, 'pos' : field.pos, 'nameField' : field.nameField, 'requiredField' : field.requiredField})
-	return jsonify({'fields' : malist})
+    for field in allFields:
+        malist.append({'idField': field.idField, 'pos': field.pos,
+                       'nameField': field.nameField, 'requiredField': field.requiredField})
+    return jsonify({'fields': malist})
+
 
 @app.route('/api/fields', methods=['POST'])
 def addOneField():
-	f=Fields(pos=request.json['pos'], nameField=request.json['nameField'], requiredField=request.json['requiredField'])
-	db.session.add(f)
-	db.session.commit()
-	allFields=Fields.query.all()
-	malist=[]
-	for field in allFields:
-		malist.append({'idField' : field.idField, 'pos' : field.pos, 'nameField' : field.nameField, 'requiredField' : field.requiredField})
-	return jsonify({'fields' : malist})
+    f = Fields(pos=request.json['pos'], nameField=request.json[
+               'nameField'], requiredField=request.json['requiredField'])
+    db.session.add(f)
+    db.session.commit()
+    allFields = Fields.query.all()
+    malist = []
+    for field in allFields:
+        malist.append({'idField': field.idField, 'pos': field.pos,
+                       'nameField': field.nameField, 'requiredField': field.requiredField})
+    return jsonify({'fields': malist})
+
 
 @app.route('/api/fields/<int:idp>', methods=['GET'])
 def returnOneField(idp):
-	oneField=Fields.query.filter_by(idField=idp).first()
-	if oneField==None:
-		return jsonify({'field' : 'no results was founds'})
-	malist=[]
-	malist.append({'idField' : oneField.idField, 'pos' : oneField.pos, 'nameField' : oneField.nameField, 'requiredField' : oneField.requiredField})
-	return jsonify({'field' : malist[0]})
+    oneField = Fields.query.filter_by(idField=idp).first()
+    if oneField == None:
+        return jsonify({'field': 'no results was founds'})
+    malist = []
+    malist.append({'idField': oneField.idField, 'pos': oneField.pos,
+                   'nameField': oneField.nameField, 'requiredField': oneField.requiredField})
+    return jsonify({'field': malist[0]})
 
 
-#Value
+# Value
 @app.route('/api/values', methods=['GET'])
 def returnAllValues():
-	allValues=Values.query.all()
-	malist=[]
+    allValues = Values.query.all()
+    malist = []
 
-	for value in allValues:
-		malist.append({'idValue' : value.idValue, 'fieldValues' : value.fieldValues, 'createdDate' : value.createdDate, 'status' : value.status})
-	return jsonify({'values' : malist})
+    for value in allValues:
+        malist.append({'idValue': value.idValue, 'fieldValues': value.fieldValues,
+                       'createdDate': value.createdDate, 'status': value.status})
+    return jsonify({'values': malist})
+
 
 @app.route('/api/values', methods=['POST'])
 def addOneValue():
-	v=Values(fieldValues=request.json['fieldValues'], createdDate=request.json['createdDate'], status=request.json['status'])
-	db.session.add(v)
-	db.session.commit()
-	allValues=Values.query.all()
-	malist=[]
-	for value in allValues:
-		malist.append({'idValue' : value.idValue, 'fieldValues' : value.fieldValues, 'createdDate' : value.createdDate, 'status' : value.status})
-	return jsonify({'values' : malist})
+    v = Values(fieldValues=request.json['fieldValues'], createdDate=request.json[
+               'createdDate'], status=request.json['status'])
+    db.session.add(v)
+    db.session.commit()
+    allValues = Values.query.all()
+    malist = []
+    for value in allValues:
+        malist.append({'idValue': value.idValue, 'fieldValues': value.fieldValues,
+                       'createdDate': value.createdDate, 'status': value.status})
+    return jsonify({'values': malist})
+
 
 @app.route('/api/values/<int:idp>', methods=['GET'])
 def returnOneValue(idp):
-	oneValue=Values.query.filter_by(idValue=idp).first()
-	if oneValue==None:
-		return jsonify({'value' : 'no results was founds'})
-	malist=[]
-	malist.append({'idValue' : oneValue.idValue, 'fieldValues' : oneValue.fieldValues, 'createdDate' : oneValue.createdDate, 'status' : oneValue.status})
-	return jsonify({'value' : malist[0]})
+    oneValue = Values.query.filter_by(idValue=idp).first()
+    if oneValue == None:
+        return jsonify({'value': 'no results was founds'})
+    malist = []
+    malist.append({'idValue': oneValue.idValue, 'fieldValues': oneValue.fieldValues,
+                   'createdDate': oneValue.createdDate, 'status': oneValue.status})
+    return jsonify({'value': malist[0]})
 
-@app.route('/api/possede', methods=['GET'])
-
+'''@app.route('/api/possede', methods=['GET'])
 def returnconnexion():
 	v=Values.query.all()
 	f=Fields.query.all()
@@ -162,21 +224,17 @@ def addconnection():
 		for field in value.fields:
 			for poi in field.pois:
 				malist.append({'idPoi':poi.idPoi,'idField':field.idField, 'idValue':value.idValue})
-	return jsonify({'possede' : malist})
+	return jsonify({'possede' : malist})'''
 
-#p=Pois.query.filter_by(idPoi=1).first()                                
-#v=Values.query.filter_by(idValue=1).first()                      
-#f=Fields.query.filter_by(idField=1).first()                      
-#v.fields.append(f)
-#f.pois.append(p)
-#db.session.commit()
+# p=Pois.query.filter_by(idPoi=1).first()
+# v=Values.query.filter_by(idValue=1).first()
+# f=Fields.query.filter_by(idField=1).first()
+# v.fields.append(f)
+# f.pois.append(p)
+# db.session.commit()
 
-
+db.create_all()
 
 
 if __name__ == "__main__":
-	app.run(debug=True)
-
-
-
-
+    app.run(debug=True)
