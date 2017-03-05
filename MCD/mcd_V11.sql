@@ -170,7 +170,7 @@ ALTER TABLE public.Values ADD CONSTRAINT FK_Values_idUser FOREIGN KEY (users_id)
 ALTER TABLE public.Fields ADD CONSTRAINT FK_Fields_idType FOREIGN KEY (types_id) REFERENCES public.Types(id);
 ALTER TABLE public.Users ADD CONSTRAINT FK_Users_idCategory FOREIGN KEY (categories_id) REFERENCES public.Categories(id);
 ALTER TABLE public.Users ADD CONSTRAINT FK_Users_idAccount FOREIGN KEY (accounts_id) REFERENCES public.Accounts(id);
-ALTER TABLE public.TypesPoi ADD CONSTRAINT FK_TypesPoi_IdGeneralType FOREIGN KEY (generaltypes_idype) REFERENCES public.GeneralTypes(Id);
+ALTER TABLE public.TypesPoi ADD CONSTRAINT FK_TypesPoi_IdGeneralType FOREIGN KEY (generaltypes_id) REFERENCES public.GeneralTypes(Id);
 ALTER TABLE public.Pois ADD CONSTRAINT FK_Pois_idTypePoi FOREIGN KEY (typespois_id) REFERENCES public.TypesPoi(id);
 ALTER TABLE public.contributions ADD CONSTRAINT FK_contributions_idField FOREIGN KEY (idField) REFERENCES public.Fields(id);
 ALTER TABLE public.contributions ADD CONSTRAINT FK_contributions_idValue FOREIGN KEY (idValue) REFERENCES public.Values(id);
