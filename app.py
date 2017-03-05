@@ -82,108 +82,108 @@ class Users(db.Model):
     firstName = db.Column(db.String(35))
     email = db.Column(db.String(35))
     picture = db.Column(db.String(35))
-    values = db.relationship('Values', backref='users_id', lazy='dynamic')
+    values = db.relationship('Values', backref='users', lazy='dynamic')
 
 # poi
-# @app.route('/api/pois', methods=['GET'])
-# def returnAllPois():
-# 	allAsso = Contributions.query.all()
-# 	malist = [] #format qui nous arrange pas
-# 	tempPoi=0
-# 	tempField=0
-# 	tempValue=0
-# 	for ass in allAsso:
-# 		onePoi = Pois.query.filter_by(idPoi=ass.id).first()
-# 		if(tempPoi!=onePoi):
-# 			tempPoi=onePoi
-# 			malist.append({'idPoi': onePoi.idPoi, 'version': onePoi.version, 'tour_id': onePoi.tour_id})
-# 		oneField = Fields.query.filter_by(idField=ass.idfields).first()
-# 		if(tempField!=oneField):
-# 			tempField=oneField
-# 			oneValue = Values.query.filter_by(idValue=ass.idvalues).first()
-# 			if(tempValue!=oneValue):
-# 				tempValue=oneValue
-# 				if(oneField.nameField!='description'):
-# 					malist.append({oneField.nameField : oneValue.fieldValues})
-#
-# 	#creation d'une format approprier en utilisant le dictionnaire
-# 	malistFormatBon=[] #format ideal
-# 	dictionnaire={}
-# 	compteurPoi=0;
-# 	compteur=2
-# 	for i in range(len(malist)):
-# 		for cle, valeur in malist[i].items():
-# 			if(cle=='idPoi'):
-# 				compteurPoi+=1;
-# 			if(compteur==compteurPoi):
-# 				malistFormatBon.append(dictionnaire)
-# 				dictionnaire={}
-# 				compteur+=1
-# 			dictionnaire[cle]=valeur
-# 	malistFormatBon.append(dictionnaire)
-# 	return jsonify({'pois': malistFormatBon})
-#
-# @app.route('/api/pois/<int:idp>', methods=['GET'])
-# def returnOnepoi(idp):
-# 	allAsso = Contributions.query.filter_by(idpoi=idp).all()
-# 	malist = [] #format qui nous arrange pas
-# 	tempPoi=0
-# 	tempField=0
-# 	tempValue=0
-# 	for ass in allAsso:
-# 		onePoi = Pois.query.filter_by(idPoi=ass.pois_id).first()
-# 		if(tempPoi!=onePoi):
-# 			tempPoi=onePoi
-# 			malist.append({'idPoi': onePoi.idPoi, 'version': onePoi.version, 'tour_id': onePoi.tour_id})
-# 		oneField = Fields.query.filter_by(idField=ass.fields_id).first()
-# 		if(tempField!=oneField):
-# 			tempField=oneField
-# 			oneValue = Values.query.filter_by(idValue=ass.values_id).first()
-# 			if(tempValue!=oneValue):
-# 				tempValue=oneValue
-# 				malist.append({oneField.nameField : oneValue.fieldValues})
-#
-# 	#creation d'une format approprier en utilisant le dictionnaire
-# 	malistFormatBon=[] #format ideal
-# 	dictionnaire={}
-# 	compteurPoi=0;
-# 	compteur=2
-# 	for i in range(len(malist)):
-# 		for cle, valeur in malist[i].items():
-# 			if(cle=='idPoi'):
-# 				compteurPoi+=1;
-# 			if(compteur==compteurPoi):
-# 				malistFormatBon.append(dictionnaire)
-# 				dictionnaire={}
-# 				compteur+=1
-# 			dictionnaire[cle]=valeur
-# 	malistFormatBon.append(dictionnaire)
-# 	return jsonify({'pois': malistFormatBon})
-#
-#
-#
-# @app.route('/api/pois', methods=['POST'])
-# def addOnePoi():
-#     # p=Pois(version=request.json['version'], tour_id=request.json['tour_id'])
-#     # db.session.add(p)
-#     # db.session.commit()
-#     # allPois=Pois.query.all()
-#     # malist=[]
-#     # for poi in allPois:
-#     # 	malist.append({'idPoi' : poi.idPoi, 'version' : poi.version, 'tour_id' : poi.tour_id})
-#     # return jsonify({'pois' : malist})
-#
-#     currentPoi = Pois(tour_id=request.json['tour_id'], version=1)
-#     for key, value in request.json.items():
-#         if key not in ['tour_id']:
-#             currentField = Fields(pos=1, nameField=key)
-#             currentValue = Values(fieldValues=value)
-#             currentasso = Contributions(
-#                 currentPoi, currentField, currentValue)
-#             db.session.add(currentasso)
-#             db.session.commit()
-#     return jsonify({'Poi' : currentPoi.idPoi}), 201
-#
+@app.route('/api/pois', methods=['GET'])
+def returnAllPois():
+	allAsso = Contributions.query.all()
+	malist = [] #format qui nous arrange pas
+	tempPoi=0
+	tempField=0
+	tempValue=0
+	for ass in allAsso:
+		onePoi = Pois.query.filter_by(idPoi=ass.id).first()
+		if(tempPoi!=onePoi):
+			tempPoi=onePoi
+			malist.append({'idPoi': onePoi.idPoi, 'version': onePoi.version, 'tour_id': onePoi.tour_id})
+		oneField = Fields.query.filter_by(idField=ass.idfields).first()
+		if(tempField!=oneField):
+			tempField=oneField
+			oneValue = Values.query.filter_by(idValue=ass.idvalues).first()
+			if(tempValue!=oneValue):
+				tempValue=oneValue
+				if(oneField.nameField!='description'):
+					malist.append({oneField.nameField : oneValue.fieldValues})
+
+	#creation d'une format approprier en utilisant le dictionnaire
+	malistFormatBon=[] #format ideal
+	dictionnaire={}
+	compteurPoi=0;
+	compteur=2
+	for i in range(len(malist)):
+		for cle, valeur in malist[i].items():
+			if(cle=='idPoi'):
+				compteurPoi+=1;
+			if(compteur==compteurPoi):
+				malistFormatBon.append(dictionnaire)
+				dictionnaire={}
+				compteur+=1
+			dictionnaire[cle]=valeur
+	malistFormatBon.append(dictionnaire)
+	return jsonify({'pois': malistFormatBon})
+
+@app.route('/api/pois/<int:idp>', methods=['GET'])
+def returnOnepoi(idp):
+	allAsso = Contributions.query.filter_by(idpoi=idp).all()
+	malist = [] #format qui nous arrange pas
+	tempPoi=0
+	tempField=0
+	tempValue=0
+	for ass in allAsso:
+		onePoi = Pois.query.filter_by(idPoi=ass.pois_id).first()
+		if(tempPoi!=onePoi):
+			tempPoi=onePoi
+			malist.append({'idPoi': onePoi.idPoi, 'version': onePoi.version, 'tour_id': onePoi.tour_id})
+		oneField = Fields.query.filter_by(idField=ass.fields_id).first()
+		if(tempField!=oneField):
+			tempField=oneField
+			oneValue = Values.query.filter_by(idValue=ass.values_id).first()
+			if(tempValue!=oneValue):
+				tempValue=oneValue
+				malist.append({oneField.nameField : oneValue.fieldValues})
+
+	#creation d'une format approprier en utilisant le dictionnaire
+	malistFormatBon=[] #format ideal
+	dictionnaire={}
+	compteurPoi=0;
+	compteur=2
+	for i in range(len(malist)):
+		for cle, valeur in malist[i].items():
+			if(cle=='idPoi'):
+				compteurPoi+=1;
+			if(compteur==compteurPoi):
+				malistFormatBon.append(dictionnaire)
+				dictionnaire={}
+				compteur+=1
+			dictionnaire[cle]=valeur
+	malistFormatBon.append(dictionnaire)
+	return jsonify({'pois': malistFormatBon})
+
+
+
+@app.route('/api/pois', methods=['POST'])
+def addOnePoi():
+    # p=Pois(version=request.json['version'], tour_id=request.json['tour_id'])
+    # db.session.add(p)
+    # db.session.commit()
+    # allPois=Pois.query.all()
+    # malist=[]
+    # for poi in allPois:
+    # 	malist.append({'idPoi' : poi.idPoi, 'version' : poi.version, 'tour_id' : poi.tour_id})
+    # return jsonify({'pois' : malist})
+
+    currentPoi = Pois(tour_id=request.json['tour_id'], version=1)
+    for key, value in request.json.items():
+        if key not in ['tour_id']:
+            currentField = Fields(pos=1, nameField=key)
+            currentValue = Values(fieldValues=value)
+            currentasso = Contributions(
+                currentPoi, currentField, currentValue)
+            db.session.add(currentasso)
+            db.session.commit()
+    return jsonify({'Poi' : currentPoi.idPoi}), 201
+
 
 db.create_all()
 db.session.commit()
