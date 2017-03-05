@@ -36,13 +36,23 @@ class Contributions(db.Model):
 
 class Generaltypes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80))
+    name = db.Column(db.String(80), nullable=False)
+    name_fr = db.Column(db.String(80))
+    name_en = db.Column(db.String(80))
+    name_es = db.Column(db.String(80))
+    name_de = db.Column(db.String(80))
+    name_it = db.Column(db.String(80))
     typespoi = db.relationship('Typespois', backref='generaltypes', lazy='dynamic')
 
 
 class Typespois(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80))
+    name = db.Column(db.String(80), nullable=False)
+    name_fr = db.Column(db.String(80))
+    name_en = db.Column(db.String(80))
+    name_es = db.Column(db.String(80))
+    name_de = db.Column(db.String(80))
+    name_it = db.Column(db.String(80))
     generaltypes_id = db.Column(db.Integer, db.ForeignKey('generaltypes.id'), nullable=False)
     pois = db.relationship('Pois', backref='typespois', lazy='dynamic')
 
