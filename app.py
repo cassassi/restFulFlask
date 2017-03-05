@@ -9,12 +9,15 @@ db = SQLAlchemy(app)
 
 class Contributions(db.Model):
     __tablename__ = 'contributions'
-    pois_id = db.Column(db.Integer, db.ForeignKey(
-        'pois.idPoi'), primary_key=True)
-    fields_id = db.Column(db.Integer, db.ForeignKey(
-        'fields.idField'), primary_key=True)
-    values_id = db.Column(db.Integer, db.ForeignKey(
-        'values.idValue'), primary_key=True)
+    version = db.Column(db.Integer)
+    status = db.Column(db.String(35))
+
+    idpoi = db.Column(db.Integer, db.ForeignKey(
+        'pois.id'), primary_key=True)
+    idfield = db.Column(db.Integer, db.ForeignKey(
+        'fields.id'), primary_key=True)
+    idvalue = db.Column(db.Integer, db.ForeignKey(
+        'values.id'), primary_key=True)
 
     pois = db.relationship("Pois", backref=db.backref(
         "contributions", cascade="all, delete-orphan"))
@@ -29,10 +32,10 @@ class Contributions(db.Model):
     #    self.values = values
 
     def __repr__(self):
-        return '<Contributions {}>'.format(self.pois.id + " " + self.fields.name + " " + self.values.fieldValues)
+        return '<Contributions {}>'.format(self.pois.id + " " + self.fields.name + " " + self.values.value)
+
 class Pois(db.Model):
-    idPoi = db.Column(db.Integer, primary_key=True)
-    version = db.Column(db.Integer)
+    id = db.Column(db.Integer, primary_key=True)
     tour_id = db.Column(db.Integer)
     fields = db.relationship('Fields', secondary='contributions',
                              backref=db.backref('pois', lazy='dynamic'))
@@ -44,28 +47,27 @@ class Pois(db.Model):
 
 
 class Fields(db.Model):
-    idField = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     pos = db.Column(db.Integer)
-    nameField = db.Column(db.String(35))
-    requiredField = db.Column(db.Boolean)
+    name = db.Column(db.String(35))
+    required = db.Column(db.Boolean)
     # values=db.relationship('Values', secondary=possede, backref=db.backref('fields', lazy = 'dynamic')  )
 
 
 class Values(db.Model):
-    idValue = db.Column(db.Integer, primary_key=True)
-    fieldValues = db.Column(db.Text)
+    id = db.Column(db.Integer, primary_key=True)
+    value = db.Column(db.Text)
     createdDate = db.Column(db.Date)
-    status = db.Column(db.String(35))
     users = db.relationship('Users', backref='value', lazy='dynamic')
 
 
 class Users(db.Model):
-    idUser = db.Column(db.Integer, primary_key=True)
-    lastNameUser = db.Column(db.String(35))
-    firstNameUser = db.Column(db.String(35))
+    id = db.Column(db.Integer, primary_key=True)
+    lastName = db.Column(db.String(35))
+    firstName = db.Column(db.String(35))
     email = db.Column(db.String(35))
-    pictureUser = db.Column(db.String(35))
-    value_id = db.Column(db.Integer, db.ForeignKey('values.idValue'))
+    picture = db.Column(db.String(35))
+    value_id = db.Column(db.Integer, db.ForeignKey('values.id'))
 
 # poi
 @app.route('/api/pois', methods=['GET'])
@@ -76,14 +78,14 @@ def returnAllPois():
 	tempField=0
 	tempValue=0
 	for ass in allAsso:
-		onePoi = Pois.query.filter_by(idPoi=ass.pois_id).first()
+		onePoi = Pois.query.filter_by(idPoi=ass.id).first()
 		if(tempPoi!=onePoi):
 			tempPoi=onePoi
 			malist.append({'idPoi': onePoi.idPoi, 'version': onePoi.version, 'tour_id': onePoi.tour_id})
-		oneField = Fields.query.filter_by(idField=ass.fields_id).first()
+		oneField = Fields.query.filter_by(idField=ass.idfields).first()
 		if(tempField!=oneField):
 			tempField=oneField
-			oneValue = Values.query.filter_by(idValue=ass.values_id).first()
+			oneValue = Values.query.filter_by(idValue=ass.idvalues).first()
 			if(tempValue!=oneValue):
 				tempValue=oneValue
 				if(oneField.nameField!='description'):
@@ -108,7 +110,7 @@ def returnAllPois():
 
 @app.route('/api/pois/<int:idp>', methods=['GET'])
 def returnOnepoi(idp):
-	allAsso = Contributions.query.filter_by(pois_id=idp).all()
+	allAsso = Contributions.query.filter_by(idpoi=idp).all()
 	malist = [] #format qui nous arrange pas
 	tempPoi=0
 	tempField=0
