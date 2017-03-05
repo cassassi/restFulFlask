@@ -1,5 +1,5 @@
 ------------------------------------------------------------
---        Script Postgre 
+--        Script Postgre
 ------------------------------------------------------------
 
 
@@ -22,7 +22,7 @@ CREATE TABLE public.Values(
 	id    SERIAL NOT NULL ,
 	value JSON  NOT NULL ,
 	createdDate DATE  NOT NULL ,
-	idUser      INT  NOT NULL ,
+	users_id     INT  NOT NULL ,
 	CONSTRAINT prk_constraint_Values PRIMARY KEY (id)
 )WITHOUT OIDS;
 
@@ -35,7 +35,7 @@ CREATE TABLE public.Fields(
 	pos           INT   ,
 	name     VARCHAR (50)  ,
 	required BOOL   ,
-	idType        INT  NOT NULL ,
+	types_id        INT  NOT NULL ,
 	CONSTRAINT prk_constraint_Fields PRIMARY KEY (id)
 )WITHOUT OIDS;
 
@@ -49,8 +49,8 @@ CREATE TABLE public.Users(
 	firstName VARCHAR (250) NOT NULL ,
 	email         VARCHAR (180)  ,
 	picture   VARCHAR (180)  ,
-	idCategory    INT   ,
-	idAccount     INT   ,
+	categories_id    INT   ,
+	accounts_id     INT   ,
 	CONSTRAINT prk_constraint_Users PRIMARY KEY (id)
 )WITHOUT OIDS;
 
@@ -58,7 +58,7 @@ CREATE TABLE public.Users(
 ------------------------------------------------------------
 -- Table: TypesPoi
 ------------------------------------------------------------
-CREATE TABLE public.TypesPoi(
+CREATE TABLE public.TypesPois(
 	id     SERIAL NOT NULL ,
 	name    VARCHAR (180) NOT NULL UNIQUE,
 	name_fr VARCHAR (180) ,
@@ -66,8 +66,8 @@ CREATE TABLE public.TypesPoi(
 	name_es VARCHAR (180) ,
 	name_de VARCHAR (180) ,
 	name_it VARCHAR (180) ,
-	IdGeneralType  INT  NOT NULL ,
-	CONSTRAINT prk_constraint_TypesPoi PRIMARY KEY (id)
+	generaltypes_id  INT  NOT NULL ,
+	CONSTRAINT prk_constraint_TypesPois PRIMARY KEY (id)
 )WITHOUT OIDS;
 
 
@@ -124,7 +124,7 @@ CREATE TABLE public.Awards(
 CREATE TABLE public.Pois(
 	id     SERIAL NOT NULL ,
 	tour_id   INT  NOT NULL UNIQUE,
-	idTypePoi INT  NOT NULL ,
+	typespois_id INT  NOT NULL ,
 	CONSTRAINT prk_constraint_Pois PRIMARY KEY (id)
 )WITHOUT OIDS;
 
@@ -166,15 +166,15 @@ CREATE TABLE public.Comments(
 
 
 
-ALTER TABLE public.Values ADD CONSTRAINT FK_Values_idUser FOREIGN KEY (idUser) REFERENCES public.Users(id);
-ALTER TABLE public.Fields ADD CONSTRAINT FK_Fields_idType FOREIGN KEY (idType) REFERENCES public.Types(id);
-ALTER TABLE public.Users ADD CONSTRAINT FK_Users_idCategory FOREIGN KEY (idCategory) REFERENCES public.Categories(id);
-ALTER TABLE public.Users ADD CONSTRAINT FK_Users_idAccount FOREIGN KEY (idAccount) REFERENCES public.Accounts(id);
-ALTER TABLE public.TypesPoi ADD CONSTRAINT FK_TypesPoi_IdGeneralType FOREIGN KEY (IdGeneralType) REFERENCES public.GeneralTypes(Id);
-ALTER TABLE public.Pois ADD CONSTRAINT FK_Pois_idTypePoi FOREIGN KEY (idTypePoi) REFERENCES public.TypesPoi(id);
-ALTER TABLE public.contributions ADD CONSTRAINT FK_possede_idField FOREIGN KEY (idField) REFERENCES public.Fields(id);
-ALTER TABLE public.contributions ADD CONSTRAINT FK_possede_idValue FOREIGN KEY (idValue) REFERENCES public.Values(id);
-ALTER TABLE public.contributions ADD CONSTRAINT FK_possede_idPoi FOREIGN KEY (idPoi) REFERENCES public.Pois(id);
+ALTER TABLE public.Values ADD CONSTRAINT FK_Values_idUser FOREIGN KEY (users_id) REFERENCES public.Users(id);
+ALTER TABLE public.Fields ADD CONSTRAINT FK_Fields_idType FOREIGN KEY (types_id) REFERENCES public.Types(id);
+ALTER TABLE public.Users ADD CONSTRAINT FK_Users_idCategory FOREIGN KEY (categories_id) REFERENCES public.Categories(id);
+ALTER TABLE public.Users ADD CONSTRAINT FK_Users_idAccount FOREIGN KEY (accounts_id) REFERENCES public.Accounts(id);
+ALTER TABLE public.TypesPoi ADD CONSTRAINT FK_TypesPoi_IdGeneralType FOREIGN KEY (generaltypes_idype) REFERENCES public.GeneralTypes(Id);
+ALTER TABLE public.Pois ADD CONSTRAINT FK_Pois_idTypePoi FOREIGN KEY (typespois_id) REFERENCES public.TypesPoi(id);
+ALTER TABLE public.contributions ADD CONSTRAINT FK_contributions_idField FOREIGN KEY (idField) REFERENCES public.Fields(id);
+ALTER TABLE public.contributions ADD CONSTRAINT FK_contributions_idValue FOREIGN KEY (idValue) REFERENCES public.Values(id);
+ALTER TABLE public.contributions ADD CONSTRAINT FK_contributions_idPoi FOREIGN KEY (idPoi) REFERENCES public.Pois(id);
 ALTER TABLE public.rewards ADD CONSTRAINT FK_retribue_idAward FOREIGN KEY (idAward) REFERENCES public.Awards(id);
 ALTER TABLE public.rewards ADD CONSTRAINT FK_retribue_idUser FOREIGN KEY (idUser) REFERENCES public.Users(id);
 ALTER TABLE public.comments ADD CONSTRAINT FK_comments_idUser FOREIGN KEY (idUser) REFERENCES public.Users(id);
