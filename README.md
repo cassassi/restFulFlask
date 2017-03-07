@@ -1,5 +1,5 @@
 # restFulFlask
-Creation d'une API REST 
+Création d'une API REST
 
 #creation d'environement python3
 mkdir appRestFulFlask
@@ -15,8 +15,13 @@ pip3 install psycopg2
 pip3 install Flask-SQLAlchemy
 
 #configuration
-config.cfg : changer le mot de passe et le login et crier une base de donnee vide
-l'application se charge de crier les tables
+- Modifier le fichier de configuration pour accéder à la base de données :
+>cp config.cfg.default config.cfg
+
+- Créer une base de données vide
+- Ajouter vos paramètres de connexion à la base de données :
+config.cfg : changer le mot de passe,  le login, le host et le nom de la base de données
+- l'application se charge de créer les tables
 
 #lancer l'application
 python3 app.py
@@ -27,7 +32,3 @@ http http://127.0.0.1:5000/api/pois
 
 Individu (GET)
 http http://127.0.0.1:5000/api/pois/1
-
-
-
-
