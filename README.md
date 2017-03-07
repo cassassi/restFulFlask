@@ -20,7 +20,7 @@ pip3 install Flask-SQLAlchemy
 
 - Créer une base de données vide
 - Ajouter vos paramètres de connexion à la base de données :
-config.cfg : changer le mot de passe,  le login, le host et le nom de la base de données
+config.cfg : changer l'accès à la base de données
 - l'application se charge de créer les tables
 
 #lancer l'application
