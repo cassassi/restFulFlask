@@ -105,6 +105,7 @@ class Users(db.Model):
 @app.route('/api/pois', methods=['GET'])
 def returnAllPois():
 	allAsso = Contributions.query.all()
+
 	malist = [] #format qui nous arrange pas
 	tempPoi=0
 	tempField=0
@@ -143,6 +144,7 @@ def returnAllPois():
 @app.route('/api/pois/<int:idp>', methods=['GET'])
 def returnOnepoi(idp):
 	allAsso = Contributions.query.filter_by(idpoi=idp).all()
+
 	malist = [] #format qui nous arrange pas
 	tempPoi=0
 	tempField=0
