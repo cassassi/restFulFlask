@@ -34,9 +34,9 @@ if (($handle = fopen("./output/fields-values-pois_csv_to_sql.sql", "a")) !== FAL
   foreach ($rows as $key => $value) {
     if($key == 110 ) break;
     $row = explode(";", $value);
-    /*INSERT INTO public.pois(id, tour_id, idtypepoi)
+    /*INSERT INTO public.pois(id, tour_id, typespois_id)
 	     VALUES (?, ?, ?);*/
-    $insertPois = "INSERT INTO public.pois(id, tour_id, idtypepoi) VALUES ("
+    $insertPois = "INSERT INTO public.pois(id, tour_id, typespois_id) VALUES ("
       . $row[0] .
       ", '" . strval($row[0]) .
       "', '" . strval($row[13]) . "' );\n";
