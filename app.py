@@ -7,21 +7,23 @@ app.config.from_pyfile('config.cfg')
 db = SQLAlchemy(app)
 
 
-class Association_PFV(db.Model):
-    __tablename__ = 'association_pfv'
-    pois_id = db.Column(db.Integer, db.ForeignKey(
-        'pois.idPoi'), primary_key=True)
-    fields_id = db.Column(db.Integer, db.ForeignKey(
-        'fields.idField'), primary_key=True)
-    values_id = db.Column(db.Integer, db.ForeignKey(
-        'values.idValue'), primary_key=True)
+class Contributions(db.Model):
+    version = db.Column(db.Integer)
+    status = db.Column(db.String(35))
+
+    idpoi = db.Column(db.Integer, db.ForeignKey(
+        'pois.id'), primary_key=True)
+    idfield = db.Column(db.Integer, db.ForeignKey(
+        'fields.id'), primary_key=True)
+    idvalue = db.Column(db.Integer, db.ForeignKey(
+        'values.id'), primary_key=True)
 
     pois = db.relationship("Pois", backref=db.backref(
-        "association_pfv", cascade="all, delete-orphan"))
+        "contributions", cascade="all, delete-orphan"))
     fields = db.relationship("Fields", backref=db.backref(
-        "association_pfv", cascade="all, delete-orphan"))
+        "contributions", cascade="all, delete-orphan"))
     values = db.relationship("Values", backref=db.backref(
-        "association_pfv", cascade="all, delete-orphan"))
+        "contributions", cascade="all, delete-orphan"))
 
     #def __init__(self, pois=None, fields=None, values=None):
     #    self.pois = pois
@@ -29,66 +31,98 @@ class Association_PFV(db.Model):
     #    self.values = values
 
     def __repr__(self):
-        return '<Association_PFV {}>'.format(self.pois.id + " " + self.fields.name + " " + self.values.fieldValues)
+        return '<Contributions {}>'.format(self.pois.id + " " + self.fields.name + " " + self.values.value)
+
+
+class Generaltypes(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    name_fr = db.Column(db.String(80))
+    name_en = db.Column(db.String(80))
+    name_es = db.Column(db.String(80))
+    name_de = db.Column(db.String(80))
+    name_it = db.Column(db.String(80))
+    typespoi = db.relationship('Typespois', backref='generaltypes', lazy='dynamic')
+
+
+class Typespois(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    name_fr = db.Column(db.String(80))
+    name_en = db.Column(db.String(80))
+    name_es = db.Column(db.String(80))
+    name_de = db.Column(db.String(80))
+    name_it = db.Column(db.String(80))
+    generaltypes_id = db.Column(db.Integer, db.ForeignKey('generaltypes.id'), nullable=False)
+    pois = db.relationship('Pois', backref='typespois', lazy='dynamic')
+
+
 class Pois(db.Model):
-    idPoi = db.Column(db.Integer, primary_key=True)
-    version = db.Column(db.Integer)
+    id = db.Column(db.Integer, primary_key=True)
     tour_id = db.Column(db.Integer)
-    fields = db.relationship('Fields', secondary='association_pfv',
+    typespois_id = db.Column(db.Integer, db.ForeignKey('typespois.id'), nullable=False)
+
+
+    fields = db.relationship('Fields', secondary='contributions',
                              backref=db.backref('pois', lazy='dynamic'))
-    values = db.relationship('Values', secondary='association_pfv',
+    values = db.relationship('Values', secondary='contributions',
                              backref=db.backref('pois', lazy='dynamic'))
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
+class Types(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False, unique=True)
+    size = db.Column(db.Integer)
+    fields = db.relationship('Fields', backref='types', lazy='dynamic')
+
+
 class Fields(db.Model):
-    idField = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     pos = db.Column(db.Integer)
-    nameField = db.Column(db.String(35))
-    requiredField = db.Column(db.Boolean)
-    # values=db.relationship('Values', secondary=possede, backref=db.backref('fields', lazy = 'dynamic')  )
+    name = db.Column(db.String(80))
+    required = db.Column(db.Boolean)
+    types_id = db.Column(db.Integer, db.ForeignKey('types.id'))
 
 
 class Values(db.Model):
-    idValue = db.Column(db.Integer, primary_key=True)
-    fieldValues = db.Column(db.Text)
-    createdDate = db.Column(db.Date)
-    status = db.Column(db.String(35))
-    users = db.relationship('Users', backref='value', lazy='dynamic')
-
+    id = db.Column(db.Integer, primary_key=True)
+    value = db.Column(db.Text)
+    createddate = db.Column(db.Date)
+    users_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 class Users(db.Model):
-    idUser = db.Column(db.Integer, primary_key=True)
-    lastNameUser = db.Column(db.String(35))
-    firstNameUser = db.Column(db.String(35))
+    id = db.Column(db.Integer, primary_key=True)
+    lastname = db.Column(db.String(35))
+    firstname = db.Column(db.String(35))
     email = db.Column(db.String(35))
-    pictureUser = db.Column(db.String(35))
-    value_id = db.Column(db.Integer, db.ForeignKey('values.idValue'))
+    picture = db.Column(db.String(35))
+    values = db.relationship('Values', backref='users', lazy='dynamic')
 
 # poi
 @app.route('/api/pois', methods=['GET'])
 def returnAllPois():
-	allAsso = Association_PFV.query.all()
+	allAsso = Contributions.query.all()
+
 	malist = [] #format qui nous arrange pas
 	tempPoi=0
 	tempField=0
 	tempValue=0
-	for ass in allAsso:	
-		onePoi = Pois.query.filter_by(idPoi=ass.pois_id).first()
+	for ass in allAsso:
+		onePoi = Pois.query.filter_by(id=ass.idpoi).first()
 		if(tempPoi!=onePoi):
 			tempPoi=onePoi
-			malist.append({'idPoi': onePoi.idPoi, 'version': onePoi.version, 'tour_id': onePoi.tour_id})
-		oneField = Fields.query.filter_by(idField=ass.fields_id).first()
+			malist.append({'id': onePoi.id, 'tour_id': onePoi.tour_id})
+		oneField = Fields.query.filter_by(id=ass.idfield).first()
 		if(tempField!=oneField):
 			tempField=oneField
-			oneValue = Values.query.filter_by(idValue=ass.values_id).first()
+			oneValue = Values.query.filter_by(id=ass.idvalue).first()
 			if(tempValue!=oneValue):
 				tempValue=oneValue
-				if(oneField.nameField!='description'):
-					malist.append({oneField.nameField : oneValue.fieldValues})
-	
+				if(oneField.name != 'description'):
+					malist.append({oneField.name : oneValue.value})
 	#creation d'une format approprier en utilisant le dictionnaire
 	malistFormatBon=[] #format ideal
 	dictionnaire={}
@@ -96,7 +130,7 @@ def returnAllPois():
 	compteur=2
 	for i in range(len(malist)):
 		for cle, valeur in malist[i].items():
-			if(cle=='idPoi'):
+			if(cle=='id'):
 				compteurPoi+=1;
 			if(compteur==compteurPoi):
 				malistFormatBon.append(dictionnaire)
@@ -108,24 +142,25 @@ def returnAllPois():
 
 @app.route('/api/pois/<int:idp>', methods=['GET'])
 def returnOnepoi(idp):
-	allAsso = Association_PFV.query.filter_by(pois_id=idp).all()
+	allAsso = Contributions.query.filter_by(idpoi=idp).all()
+
 	malist = [] #format qui nous arrange pas
 	tempPoi=0
 	tempField=0
 	tempValue=0
-	for ass in allAsso:	
-		onePoi = Pois.query.filter_by(idPoi=ass.pois_id).first()
+	for ass in allAsso:
+		onePoi = Pois.query.filter_by(id = ass.idpoi).first()
 		if(tempPoi!=onePoi):
 			tempPoi=onePoi
-			malist.append({'idPoi': onePoi.idPoi, 'version': onePoi.version, 'tour_id': onePoi.tour_id})
-		oneField = Fields.query.filter_by(idField=ass.fields_id).first()
+			malist.append({'id': onePoi.id, 'tour_id': onePoi.tour_id})
+		oneField = Fields.query.filter_by(id=ass.idfield).first()
 		if(tempField!=oneField):
 			tempField=oneField
-			oneValue = Values.query.filter_by(idValue=ass.values_id).first()
+			oneValue = Values.query.filter_by(id=ass.idvalue).first()
 			if(tempValue!=oneValue):
 				tempValue=oneValue
-				malist.append({oneField.nameField : oneValue.fieldValues})
-	
+				malist.append({oneField.name : oneValue.value})
+
 	#creation d'une format approprier en utilisant le dictionnaire
 	malistFormatBon=[] #format ideal
 	dictionnaire={}
@@ -161,7 +196,7 @@ def addOnePoi():
         if key not in ['tour_id']:
             currentField = Fields(pos=1, nameField=key)
             currentValue = Values(fieldValues=value)
-            currentasso = Association_PFV(
+            currentasso = Contributions(
                 currentPoi, currentField, currentValue)
             db.session.add(currentasso)
             db.session.commit()
