@@ -123,7 +123,6 @@ def returnAllPois():
 				tempValue=oneValue
 				if(oneField.name != 'description'):
 					malist.append({oneField.name : oneValue.value})
-
 	#creation d'une format approprier en utilisant le dictionnaire
 	malistFormatBon=[] #format ideal
 	dictionnaire={}
@@ -131,7 +130,7 @@ def returnAllPois():
 	compteur=2
 	for i in range(len(malist)):
 		for cle, valeur in malist[i].items():
-			if(cle=='idPoi'):
+			if(cle=='id'):
 				compteurPoi+=1;
 			if(compteur==compteurPoi):
 				malistFormatBon.append(dictionnaire)
