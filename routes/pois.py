@@ -7,6 +7,7 @@ def returnAllPois():
 	allAsso = models.Contributions.query.all()
 
 	malist = []
+	tempPoi=0
 	tempField=0
 	tempValue=0
 	for ass in allAsso:
