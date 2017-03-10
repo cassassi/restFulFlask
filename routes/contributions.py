@@ -17,7 +17,7 @@ def returnAllContributions():
             tempValue=oneValue
             malist.append({'id': oneValue.id, 'created_date': oneValue.createddate, 'value': oneValue.value})
 
-            oneUser = models.Fields.query.filter_by(id=oneValue.users_id).first()
+            oneUser = models.Values.query.filter_by(id=oneValue.users_id).first()
             theUser = models.Users.query.filter_by(id=oneUser.id).first()
             malist.append({'user_name': theUser.lastname})
 
@@ -27,9 +27,9 @@ def returnAllContributions():
         oneField = models.Fields.query.filter_by(id=ass.idfield).first()
         if(tempField!=oneField):
             tempField=oneField
-            malist.append({'field.name' : oneField.name})
+            malist.append({'field_name' : oneField.name})
 
-        malist.append({'status': ass.status})
+        malist.append({'status': ass.status, 'version': ass.version})
 
     #creation d'un format approprié en utilisant le dictionnaire
     malistFormatBon=[] #format ideal
@@ -76,7 +76,7 @@ def returnContributionsById(idp):
             tempField=oneField
             malist.append({'field.name' : oneField.name})
 
-        malist.append({'status': ass.status})
+        malist.append({'status': ass.status,  'version': ass.version})
         
     #creation d'un format approprié en utilisant le dictionnaire
     malistFormatBon=[] #format ideal
